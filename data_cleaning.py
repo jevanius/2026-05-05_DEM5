@@ -2,8 +2,6 @@ import pandas as pd
 import os
 import csv
 import datetime as dt
-import pyodbc
-from sqlalchemy import create_engine
 
 
 files = os.listdir("C:/Users/Admin/Downloads/data")
@@ -41,13 +39,14 @@ def overdue_check(data):
     data['overdue'] = data['loan_duration'].astype(int).apply(lambda x: 'yes' if x > 14 else 'no')
     return data
 
-for f in files:
-    print("converting "+ f)
-    table = load_csv(f)
-    table = fix_dates(table)
-    table = fix_na(table)
-    if "Books" in table.columns:
-        table = validate_loans('Book Returned','Book checkout',table)
-        overdue_check(table)
-    save_clean(table)
+if __name__ == "__main__":
+    for f in files:
+        print("converting "+ f)
+        table = load_csv(f)
+        table = fix_dates(table)
+        table = fix_na(table)
+        if "Books" in table.columns:
+            table = validate_loans('Book Returned','Book checkout',table)
+            overdue_check(table)
+        save_clean(table)
     
