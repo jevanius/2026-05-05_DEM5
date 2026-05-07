@@ -15,9 +15,10 @@ class Calculator:
     def multiply (self):
         return self.a*self.b
     
+    def sqrt (self):
+        return self.a**0.5
+    
 if __name__ == "__main__":
-    myCalc = Calculator(a=4,b=2)
-    print(myCalc.sum())
-    print(myCalc.subtract())
-    print(myCalc.division())
-    print(myCalc.multiply())
+    myCalc = Calculator(a=435,b=2)
+    print(myCalc.sqrt())
+    

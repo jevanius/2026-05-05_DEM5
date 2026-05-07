@@ -2,9 +2,10 @@ import pandas as pd
 import os
 import csv
 import datetime as dt
+import sqlite3
 
 
-files = os.listdir("C:/Users/Admin/Downloads/data")
+files = os.listdir("./data")
 
 def fix_dates(data):
     if "Book checkout" in data.columns:
@@ -14,7 +15,7 @@ def fix_dates(data):
     return data
 
 def load_csv(filepath):
-    folder = ("C:/Users/Admin/Downloads/data/")
+    folder = ("./data/")
     data=pd.DataFrame()
     data = pd.read_csv(folder+filepath)
     return data
@@ -39,14 +40,43 @@ def overdue_check(data):
     data['overdue'] = data['loan_duration'].astype(int).apply(lambda x: 'yes' if x > 14 else 'no')
     return data
 
-if __name__ == "__main__":
-    for f in files:
-        print("converting "+ f)
+def start_local_db(db_name="/data/local_database.db"):
+   
+    try:
+        # Connect to SQLite database (creates file if it doesn't exist)
+        conn = sqlite3.connect(db_name)
+        cursor = conn.cursor()
+        print(f"Connected to database: {os.path.abspath(db_name)}")
+        return conn, cursor
+    except sqlite3.Error as e:
+        print(f"Database connection failed: {e}")
+        return None, None
+
+def read_data(db_name="/data/local_database.db"):
+    conn = sqlite3.connect(db_name)
+    df = pd.read_sql_query("SELECT * FROM "+tablename, conn)
+    print(df)
+    conn.close()
+
+def full_clean(table):
         table = load_csv(f)
         table = fix_dates(table)
         table = fix_na(table)
         if "Books" in table.columns:
             table = validate_loans('Book Returned','Book checkout',table)
             overdue_check(table)
-        save_clean(table)
+        #print(table)
+        return table
+
+    #save_clean(table)
+
+if __name__ == "__main__":
+    conn, cursor = start_local_db()
+    for f in files:
+        print("converting "+ f)
+        table = full_clean(f)
+        tablename = f.replace(".csv","")
+        table.to_sql(tablename, conn, if_exists="replace", index=False)
+        read_data()
+    conn.close()
     
