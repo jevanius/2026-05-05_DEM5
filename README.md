@@ -77,3 +77,5 @@
 - Automate using scheduler and have the outputs stored securely, off site
 
 - Front end application for user to upload their own datasets rather than saving them to a specific file path
+
+- Main issue is security if the app is to be rolled out on a larger scale. Environment variables and personal data security is imperative.
