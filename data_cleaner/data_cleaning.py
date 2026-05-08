@@ -29,7 +29,7 @@ def fix_na(data):
 
 def save_clean(data):
     filename = f.replace(".csv","")
-    data.to_csv('C:/Users/Admin/Documents/2026-05-05_DEM5/data/'+filename+'_clean.csv', index = False)
+    data.to_csv('./data_clean/'+filename+'_clean.csv', index = False)
 
 def validate_loans(returnCol,checkoutCol,data):
     data['loan_duration'] = (data[returnCol]-data[checkoutCol]).dt.days
@@ -71,12 +71,14 @@ def full_clean(table):
     #save_clean(table)
 
 if __name__ == "__main__":
-    conn, cursor = start_local_db()
+    #conn, cursor = start_local_db()
     for f in files:
         print("converting "+ f)
         table = full_clean(f)
         tablename = f.replace(".csv","")
-        table.to_sql(tablename, conn, if_exists="replace", index=False)
-        read_data()
-    conn.close()
+        print("Saving "+tablename+"...")
+        save_clean(table)
+        #table.to_sql(tablename, conn, if_exists="replace", index=False)
+        #read_data()
+    #conn.close()
     
